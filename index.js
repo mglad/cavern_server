@@ -42,17 +42,57 @@ app.post('/user', (req, res) => {
 });
 
 app.get('/menu', (req, res) => {
-    db.Menu.MainCourse.findAll().then((mainCourses) => {
-        db.Menu.Side.findAll().then((sides) => {
-            db.Menu.Beverage.findAll().then((beverages) => {
-                res.send({
-                    mainCourses: mainCourses,
-                    sides: sides,
-                    beverages: beverages
+    db.sequelize
+        .sync()
+        .then((err) => {
+            db.Menu.MainCourse.findAll().then((mainCourses) => {
+                db.Menu.Side.findAll().then((sides) => {
+                    db.Menu.Beverage.findAll().then((beverages) => {
+                        res.send({
+                            mainCourses: mainCourses,
+                            sides: sides,
+                            beverages: beverages
+                        });
+                    });
                 });
             });
         });
-    });
+});
+
+app.post('/menu', (req, res) => {
+    var item = req.body.menuItem;
+    console.log(item);
+    if (item.category == "Main Course") {
+        db.Menu.MainCourse.update({
+          available: item.available
+        }, {
+          fields: ['available'],
+          where: {
+            name: item.name,
+            type: item.type
+          }
+        });
+    } else if (item.category == "Side") {
+      db.Menu.Side.update({
+        available: item.available
+      }, {
+        fields: ['available'],
+        where: {
+          name: item.name
+        }
+      });
+    } else if (item.category == "Beverage") {
+      db.Menu.Beverage.update({
+        available: item.available
+      }, {
+        fields: ['available'],
+        where: {
+          name: item.name
+        }
+      });
+    }
+
+    res.send({success: true});
 });
 
 app.get('/hours', (req, res) => {
@@ -100,7 +140,8 @@ app.post('/order', (req, res) => {
         }
     });
 });
-app.get('/order/:userId', (req, res) => {
+
+app.get('/order/by_user/:userId', (req, res) => {
     db.Order.findAll({
         where: {
             userId: req.params.userId
@@ -108,6 +149,53 @@ app.get('/order/:userId', (req, res) => {
     }).then((orders) => {
         res.send({
             orders: orders
+        });
+    });
+});
+
+app.get('/order', (req, res) => {
+    db.Order.findAll().then((orders) => {
+        res.send({
+            orders: orders
+        });
+    });
+});
+
+app.put('/order/:orderId', (req, res) => {
+    db.Order.find({
+        where: {
+            id: req.params.orderId
+        }
+    }).then((order) => {
+        order.update({
+            status: req.body.status
+        }).then(() => {
+            db.Order.findAll().then((orders) => {
+                res.send({
+                    orders: orders
+                });
+            });
+        });
+    });
+});
+
+app.put('/hours/:id', (req, res) => {
+    db.Hours.find({
+        where: {
+            id: req.params.id
+        }
+    }).then((hours) => {
+        var open = req.body.open === undefined ? null : req.body.open;
+        var close = req.body.close === undefined ? null : req.body.close;
+        hours.update({
+            open: open,
+            close: close
+        }).then(() => {
+            db.Hours.findAll().then((hours) => {
+                res.send({
+                    hoursOfOperation: hours
+                });
+            });
         });
     });
 });
