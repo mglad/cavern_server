@@ -128,12 +128,19 @@ app.post('/order', (req, res) => {
         var error = isValidOrderTime(req.body.order, hours);
         if (error === null) {
             var order = req.body.order;
-            order.pickUpTime = moment(order.date + " " + order.time, "MM/DD/YY hh:mm:ss A").format();
-            console.log(order.pickUpTime);
-            db.createOrder(req.body.order, req.body.user.id);
-            res.send({
-                success: true
-            });
+            if (!req.body.user.blacklisted) {
+                order.pickUpTime = moment(order.date + " " + order.time, "MM/DD/YY hh:mm:ss A").format();
+                console.log(order.pickUpTime);
+                db.createOrder(req.body.order, req.body.user.id);
+                res.send({
+                    success: true
+                });
+            } else {
+                res.send({
+                    success: false,
+                    error: "You are banned from placing orders"
+                });
+            }
         } else {
             res.send({
                 success: false,
