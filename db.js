@@ -94,7 +94,8 @@ var db = {
         this.User = this.sequelize.define('User', {
             username: Sequelize.STRING,
             password: Sequelize.STRING,
-            admin: Sequelize.BOOLEAN
+            admin: Sequelize.BOOLEAN,
+            blacklisted: Sequelize.BOOLEAN
         });
 
         this.sequelize
@@ -103,13 +104,15 @@ var db = {
                 this.User.create({
                     username: 'user',
                     password: 'test',
-                    admin: false
+                    admin: false,
+                    blacklisted: false
                 });
 
                 this.User.create({
                     username: 'eric',
                     password: 'pass',
-                    admin: true
+                    admin: true,
+                    blacklisted: false
                 });
             });
     },

@@ -199,3 +199,11 @@ app.put('/hours/:id', (req, res) => {
         });
     });
 });
+
+app.get('/users', (req, res) => {
+  db.User.findAll().then((users) => {
+    res.send({
+      users: users
+    });
+  });
+});
