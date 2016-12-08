@@ -213,7 +213,7 @@ app.get('/users', (req, res) => {
 app.post('/users', (req, res) => {
     var item = req.body.user;
     db.User.update({
-        available: item.blacklisted
+        blacklisted: item.blacklisted
     }, {
         fields: ['blacklisted'],
         where: {
