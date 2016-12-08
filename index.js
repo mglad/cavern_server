@@ -64,35 +64,37 @@ app.post('/menu', (req, res) => {
     console.log(item);
     if (item.category == "Main Course") {
         db.Menu.MainCourse.update({
-          available: item.available
+            available: item.available
         }, {
-          fields: ['available'],
-          where: {
-            name: item.name,
-            type: item.type
-          }
+            fields: ['available'],
+            where: {
+                name: item.name,
+                type: item.type
+            }
         });
     } else if (item.category == "Side") {
-      db.Menu.Side.update({
-        available: item.available
-      }, {
-        fields: ['available'],
-        where: {
-          name: item.name
-        }
-      });
+        db.Menu.Side.update({
+            available: item.available
+        }, {
+            fields: ['available'],
+            where: {
+                name: item.name
+            }
+        });
     } else if (item.category == "Beverage") {
-      db.Menu.Beverage.update({
-        available: item.available
-      }, {
-        fields: ['available'],
-        where: {
-          name: item.name
-        }
-      });
+        db.Menu.Beverage.update({
+            available: item.available
+        }, {
+            fields: ['available'],
+            where: {
+                name: item.name
+            }
+        });
     }
 
-    res.send({success: true});
+    res.send({
+        success: true
+    });
 });
 
 app.get('/hours', (req, res) => {
@@ -201,9 +203,24 @@ app.put('/hours/:id', (req, res) => {
 });
 
 app.get('/users', (req, res) => {
-  db.User.findAll().then((users) => {
-    res.send({
-      users: users
+    db.User.findAll().then((users) => {
+        res.send({
+            users: users
+        });
     });
-  });
+});
+
+app.post('/users', (req, res) => {
+    var item = req.body.user;
+    db.User.update({
+        available: item.blacklisted
+    }, {
+        fields: ['blacklisted'],
+        where: {
+            username: item.username
+        }
+    });
+    res.send({
+        success: true
+    });
 });
